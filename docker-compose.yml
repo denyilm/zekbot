@@ -1,0 +1,39 @@
+version: "3.8"
+   
+services:
+  db:
+    container_name: pgsql_db_zek
+    image: postgres:13.0-alpine
+    volumes:
+      - zekbot_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=zekbotdb
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    container_name: pgadmin4_db_gui_zek
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: yilmaz.deniz.itu@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: zekbot3131
+    ports:
+      - "5050:80"
+
+  web:
+    container_name: django_server_zek
+    image: zekbot:latest
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:7500
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "7500:7500"
+    depends_on:
+      - db
+
+volumes:
+  zekbot_data:

@@ -1,0 +1,9 @@
+Django==3.2
+djangorestframework
+numpy
+pandas
+matplotlib
+django-cors-headers
+django-cors-middleware
+psycopg2
+django-rest-knox
