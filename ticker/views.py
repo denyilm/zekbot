@@ -17,6 +17,7 @@ def EthApi(request, id=-1):
     if request.method=='GET':
         eth=Eth.objects.all()
         eth_s=EthSerializer(eth,many=True)
+        print("ETH")
         return  JsonResponse(eth_s.data, safe=False)
     if request.method=='POST':
         eth_data=JSONParser().parse(request)
