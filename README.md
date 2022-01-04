@@ -1,2 +1,2 @@
 # zekbot
-crypto trader
+crypto trader django backend
