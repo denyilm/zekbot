@@ -1,0 +1,2 @@
+# zekbot
+crypto trader
