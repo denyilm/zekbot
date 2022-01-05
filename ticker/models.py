@@ -10,8 +10,13 @@ from django.utils.crypto import get_random_string
 
 class Eth(models.Model):
     id=models.AutoField(primary_key=True, editable = False)
+    pair=models.CharField(blank=True, null=True, max_length=20)
     price=models.FloatField(blank=True, null=True)
     date=models.DateTimeField(auto_now=True)
 
 
-
+class Shib(models.Model):
+    id=models.AutoField(primary_key=True, editable = False)
+    pair=models.CharField(blank=True, null=True, max_length=20)
+    price=models.FloatField(blank=True, null=True)
+    date=models.DateTimeField(auto_now=True)
