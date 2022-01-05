@@ -11,5 +11,7 @@ urlpatterns=[
     url(r'^ethsocket$',views.EthSocketApi),
     url(r'^ethsocket/([0-9]+)$',views.EthSocketApi),
     url(r'^shibsocket$',views.ShibSocketApi),
-    url(r'^shibsocket/([0-9]+)$',views.ShibSocketApi)
+    url(r'^shibsocket/([0-9]+)$',views.ShibSocketApi),
+    url(r'^tradeeth$',views.TradeEth),
+    url(r'^tradeshib$',views.TradeShib)
 ]
