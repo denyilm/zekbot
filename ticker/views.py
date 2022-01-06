@@ -1,6 +1,7 @@
 from os import kill, system
 from django.shortcuts import render
 import time, base64, hmac, hashlib, requests, json
+from numpy.core.numeric import True_
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
@@ -18,9 +19,10 @@ from django.core.files.storage import default_storage
 from django.utils.crypto import get_random_string
 
 
-apiKey='3c9e6309-db16-43f8-b355-29067d6e2fed'
-apiSecret='Q0XnMt/SGpwBIuleyPy8fG0VFY3PXiP5'
+apiKey='e6e1fa37-5ed4-4c67-bdb3-583b5b74356b'
+apiSecret='JLF2zVqNo8g69d4sNSljJx494dLRot+N'
 apiSecret = base64.b64decode(apiSecret)
+dalga=True
 
 # Create your views here.
 @csrf_exempt
@@ -81,24 +83,12 @@ def ShibSocketApi(request, id=-1):
 
 @csrf_exempt
 def TradeEth(request, id=-1):
+    # Start with false, which means you have money not coin
+    position=True
     while True:
-        data=Eth.objects.all().order_by('-id')[:300].values("price")
+        data=Eth.objects.all().order_by('-id')[:600].values("price")
         data_reverse=reversed(data)
         data_reverse_s=EthSerializer(data_reverse, many=True)
-        df=pd.DataFrame(list(data_reverse))
-        cumret=(df.pct_change()+1).cumprod()-1
-        print("CUMRET: ", cumret)
-        if(id==1):
-            return JsonResponse(data_reverse_s.data, safe=False)
-
-@csrf_exempt
-def TradeShib(request, id=-1):
-    # Start with false, which means you have money not coin
-    position=False
-    while True:
-        data=Shib.objects.all().order_by('-id')[:600].values("price")
-        data_reverse=reversed(data)
-        data_reverse_s=ShibSerializer(data_reverse, many=True)
         df=pd.DataFrame(list(data_reverse))
         cumret=(df.pct_change()+1).cumprod()-1
         threshold=cumret.values[cumret.last_valid_index()][0]
@@ -109,13 +99,13 @@ def TradeShib(request, id=-1):
             print('BUY', latestPrice)
             balance=getBalance()
             money=format(balance['para'],".0f")
-            openOrder("buy", latestPrice,float(money)-1, "SHIB_TRY")
-            Shib.objects.all().delete()
+            openOrder("buy", latestPrice,float(money)-1, "ETH_TRY")
+            Eth.objects.all().delete()
             position=True
         if position:
-            data=Shib.objects.all().order_by('-id')[:600].values("price")
+            data=Eth.objects.all().order_by('-id')[:600].values("price")
             data_reverse=reversed(data)
-            data_reverse_s=ShibSerializer(data_reverse, many=True)
+            data_reverse_s=EthSerializer(data_reverse, many=True)
             df=pd.DataFrame(list(data_reverse))
             cumret=(df.pct_change()+1).cumprod()-1
             threshold=cumret.values[cumret.last_valid_index()][0]
@@ -123,23 +113,118 @@ def TradeShib(request, id=-1):
             if 100*threshold>0.15:
                 print('SELL', latestPrice)
                 balance=getBalance()
-                shib=format(balance['shib'],".0f")
-                print('SHIB', shib)
-                openOrder("sell", latestPrice, float(shib)-10, "SHIB_TRY")
-                Shib.objects.all().delete()
+                eth=balance['eth']
+                print('ETH:', eth)
+                openOrder("sell", latestPrice, float(eth)-0, "ETH_TRY")
+                Eth.objects.all().delete()
                 position=False
             if 100*threshold<-1:
                 print('SELL', latestPrice)
                 balance=getBalance()
-                shib=format(balance['shib'],".0f")
-                print('SHIB', shib)
-                openOrder("sell", latestPrice, float(shib)-10, "SHIB_TRY")
-                Shib.objects.all().delete()
+                eth=format(balance['eth'],".0f")
+                print('ETH:', eth)
+                openOrder("sell", latestPrice, float(eth)-10, "ETH_TRY")
+                Eth.objects.all().delete()
                 position=False
         time.sleep(1)
         ##
         if(id==1):
             return JsonResponse(data_reverse_s.data, safe=False)
+
+@csrf_exempt
+def TradeShib(request, id=-1):
+    # Start with false, which means you have money not coin
+    position=True
+    # dalga=True
+    if(id=='1'):
+        # dalga=True
+        while True:
+            print("DALGALAR: ")
+            data=Shib.objects.all().order_by('id').values("price")
+            data_s=ShibSerializer(data, many=True)
+            df=pd.DataFrame(list(data))
+            cumret=(df.pct_change()+1).cumprod()-1
+            threshold=cumret.values[cumret.last_valid_index()][0]
+            print("DALGALAR: ", 100*threshold)
+            # balance=getBalance()
+            latestPrice=df.values[df.last_valid_index()][0]
+            if 100*threshold<-0.3 and not position:
+                print('BUY', latestPrice)
+                balance=getBalance()
+                money=format(balance['para'],".0f")
+                openOrder("buy", latestPrice,float(money)-1, "SHIB_TRY")
+                Shib.objects.all().delete()
+                position=True
+            if position:
+                data=Shib.objects.all().order_by('id').values("price")
+                data_s=ShibSerializer(data, many=True)
+                df=pd.DataFrame(list(data))
+                cumret=(df.pct_change()+1).cumprod()-1
+                threshold=cumret.values[cumret.last_valid_index()][0]
+                latestPrice=df.values[df.last_valid_index()][0]
+                if 100*threshold>0.40:
+                    print('SELL', latestPrice)
+                    balance=getBalance()
+                    shib=format(balance['shib'],".0f")
+                    print('SHIB', shib)
+                    openOrder("sell", latestPrice, float(shib)-10, "SHIB_TRY")
+                    Shib.objects.all().delete()
+                    position=False
+                if 100*threshold<-2:
+                    print('SELL', latestPrice)
+                    balance=getBalance()
+                    shib=format(balance['shib'],".0f")
+                    print('SHIB', shib)
+                    openOrder("sell", latestPrice, float(shib)-10, "SHIB_TRY")
+                    Shib.objects.all().delete()
+                    position=False
+            time.sleep(1)
+        ##
+    if(id=='2'):
+        dalga=False
+        while True:
+            print("AYA: ")
+            data=Shib.objects.all().order_by('id').values("price")
+            data_s=ShibSerializer(data, many=True)
+            df=pd.DataFrame(list(data))
+            cumret=(df.pct_change()+1).cumprod()-1
+            threshold=cumret.values[cumret.last_valid_index()][0]
+            print("AYA: ", 100*threshold)
+            # balance=getBalance()
+            latestPrice=df.values[df.last_valid_index()][0]
+            if 100*threshold>0.02 and not position:
+                print('BUY', latestPrice)
+                balance=getBalance()
+                money=format(balance['para'],".0f")
+                openOrder("buy", latestPrice,float(money)-1, "SHIB_TRY")
+                Shib.objects.all().delete()
+                position=True
+            if position:
+                data=Shib.objects.all().order_by('id').values("price")
+                data_s=ShibSerializer(data, many=True)
+                df=pd.DataFrame(list(data))
+                cumret=(df.pct_change()+1).cumprod()-1
+                threshold=cumret.values[cumret.last_valid_index()][0]
+                latestPrice=df.values[df.last_valid_index()][0]
+                if 100*threshold>0.40:
+                    print('SELL', latestPrice)
+                    balance=getBalance()
+                    shib=format(balance['shib'],".0f")
+                    print('SHIB', shib)
+                    openOrder("sell", latestPrice, float(shib)-10, "SHIB_TRY")
+                    Shib.objects.all().delete()
+                    position=False
+                if 100*threshold<-2:
+                    print('SELL', latestPrice)
+                    balance=getBalance()
+                    shib=format(balance['shib'],".0f")
+                    print('SHIB', shib)
+                    openOrder("sell", latestPrice, float(shib)-10, "SHIB_TRY")
+                    Shib.objects.all().delete()
+                    position=False
+            time.sleep(1)
+    if(id==3):
+            return JsonResponse('Hopefully cancel', safe=False)
 
 # asd
 def openOrder(orderType, price, quantity, pair):

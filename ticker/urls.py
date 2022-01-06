@@ -13,5 +13,7 @@ urlpatterns=[
     url(r'^shibsocket$',views.ShibSocketApi),
     url(r'^shibsocket/([0-9]+)$',views.ShibSocketApi),
     url(r'^tradeeth$',views.TradeEth),
-    url(r'^tradeshib$',views.TradeShib)
+    url(r'^tradeeth/([0-9]+)$',views.TradeEth),
+    url(r'^tradeshib$',views.TradeShib),
+    url(r'^tradeshib/([0-9]+)$',views.TradeShib)
 ]
