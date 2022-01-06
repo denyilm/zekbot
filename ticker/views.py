@@ -226,6 +226,12 @@ def TradeShib(request, id=-1):
     if(id==3):
             return JsonResponse('Hopefully cancel', safe=False)
 
+
+@csrf_exempt
+def SellShib(request, id=-1):
+    print('stuff')
+
+
 # asd
 def openOrder(orderType, price, quantity, pair):
     base = "https://api.btcturk.com"
