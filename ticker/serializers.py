@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Eth, Shib
+from .models import Balance, Eth, Shib, Transaction
 
 class EthSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,5 +18,28 @@ class ShibSerializer(serializers.ModelSerializer):
             'id',
             'pair',
             'price',
+            'date'
+        )
+
+class BalanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Balance
+        fields=(
+            'id',
+            'eth',
+            'shib',
+            'para'
+            'date'
+        )
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Transaction
+        fields=(
+            'id',
+            'type',
+            'pair',
+            'price',
+            'profit',
             'date'
         )

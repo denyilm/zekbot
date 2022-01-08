@@ -15,5 +15,7 @@ urlpatterns=[
     url(r'^tradeeth$',views.TradeEth),
     url(r'^tradeeth/([0-9]+)$',views.TradeEth),
     url(r'^tradeshib$',views.TradeShib),
-    url(r'^tradeshib/([0-9]+)$',views.TradeShib)
+    url(r'^tradeshib/([0-9]+)$',views.TradeShib),
+    url(r'^balance$',views.BalanceApi),
+    url(r'^transactions$',views.TransactionApi)
 ]
